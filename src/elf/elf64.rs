@@ -168,53 +168,51 @@ impl ElfHeader for Elf64Shdr {
 }
 
 #[rustfmt::skip]
-impl ElfXXEhdr<Elf64Addr, Elf64Half, Elf64Word, Elf64Off> for Elf64Ehdr {
-    fn e_ident(&self)     -> [u8; 16]  { self.e_ident     }
-    fn e_type(&self)      -> Elf64Half { self.e_type      }
-    fn e_machine(&self)   -> Elf64Half { self.e_machine   }
-    fn e_version(&self)   -> Elf64Word { self.e_version   }
-    fn e_entry(&self)     -> Elf64Addr { self.e_entry     }
-    fn e_phoff(&self)     -> Elf64Off  { self.e_phoff     }
-    fn e_shoff(&self)     -> Elf64Off  { self.e_shoff     }
-    fn e_flags(&self)     -> Elf64Word { self.e_flags     }
-    fn e_ehsize(&self)    -> Elf64Half { self.e_ehsize    }
-    fn e_phentsize(&self) -> Elf64Half { self.e_phentsize }
-    fn e_phnum(&self)     -> Elf64Half { self.e_phnum     }
-    fn e_shentsize(&self) -> Elf64Half { self.e_shentsize }
-    fn e_shnum(&self)     -> Elf64Half { self.e_shnum     }
-    fn e_shstrndx(&self)  -> Elf64Half { self.e_shstrndx  }
+impl ElfXXEhdr for Elf64Ehdr {
+    fn e_ident(&self)     -> [u8; 16] { self.e_ident            }
+    fn e_type(&self)      -> u64      { self.e_type.into()      }
+    fn e_machine(&self)   -> u64      { self.e_machine.into()   }
+    fn e_version(&self)   -> u64      { self.e_version.into()   }
+    fn e_entry(&self)     -> u64      { self.e_entry.into()     }
+    fn e_phoff(&self)     -> u64      { self.e_phoff.into()     }
+    fn e_shoff(&self)     -> u64      { self.e_shoff.into()     }
+    fn e_flags(&self)     -> u64      { self.e_flags.into()     }
+    fn e_ehsize(&self)    -> u64      { self.e_ehsize.into()    }
+    fn e_phentsize(&self) -> u64      { self.e_phentsize.into() }
+    fn e_phnum(&self)     -> u64      { self.e_phnum.into()     }
+    fn e_shentsize(&self) -> u64      { self.e_shentsize.into() }
+    fn e_shnum(&self)     -> u64      { self.e_shnum.into()     }
+    fn e_shstrndx(&self)  -> u64      { self.e_shstrndx.into()  }
 }
 
 #[rustfmt::skip]
-impl ElfXXPhdr<Elf64Addr, Elf64Word, Elf64Off, Elf64Xword> for Elf64Phdr {
-    fn p_type(&self)   -> Elf64Word  { self.p_type   }
-    fn p_flags(&self)  -> Elf64Word  { self.p_flags  }
-    fn p_offset(&self) -> Elf64Off   { self.p_offset }
-    fn p_vaddr(&self)  -> Elf64Addr  { self.p_vaddr  }
-    fn p_paddr(&self)  -> Elf64Addr  { self.p_paddr  }
-    fn p_filesz(&self) -> Elf64Xword { self.p_filesz }
-    fn p_memsz(&self)  -> Elf64Xword { self.p_memsz  }
-    fn p_align(&self)  -> Elf64Xword { self.p_align  }
+impl ElfXXPhdr for Elf64Phdr {
+    fn p_type(&self)   -> u64 { self.p_type.into()  }
+    fn p_flags(&self)  -> u64 { self.p_flags.into() }
+    fn p_offset(&self) -> u64 { self.p_offset       }
+    fn p_vaddr(&self)  -> u64 { self.p_vaddr        }
+    fn p_paddr(&self)  -> u64 { self.p_paddr        }
+    fn p_filesz(&self) -> u64 { self.p_filesz       }
+    fn p_memsz(&self)  -> u64 { self.p_memsz        }
+    fn p_align(&self)  -> u64 { self.p_align        }
 }
 
 #[rustfmt::skip]
-impl ElfXXShdr<Elf64Addr, Elf64Word, Elf64Off, Elf64Xword> for Elf64Shdr {
-    fn sh_name(&self)      -> Elf64Word  { self.sh_name      }
-    fn sh_type(&self)      -> Elf64Word  { self.sh_type      }
-    fn sh_flags(&self)     -> Elf64Xword { self.sh_flags     }
-    fn sh_addr(&self)      -> Elf64Addr  { self.sh_addr      }
-    fn sh_offset(&self)    -> Elf64Off   { self.sh_offset    }
-    fn sh_size(&self)      -> Elf64Xword { self.sh_size      }
-    fn sh_link(&self)      -> Elf64Word  { self.sh_link      }
-    fn sh_info(&self)      -> Elf64Word  { self.sh_info      }
-    fn sh_addralign(&self) -> Elf64Xword { self.sh_addralign }
-    fn sh_entsize(&self)   -> Elf64Xword { self.sh_entsize   }
+impl ElfXXShdr for Elf64Shdr {
+    fn sh_name(&self)      -> u64 { self.sh_name.into() }
+    fn sh_type(&self)      -> u64 { self.sh_type.into() }
+    fn sh_flags(&self)     -> u64 { self.sh_flags       }
+    fn sh_addr(&self)      -> u64 { self.sh_addr        }
+    fn sh_offset(&self)    -> u64 { self.sh_offset      }
+    fn sh_size(&self)      -> u64 { self.sh_size        }
+    fn sh_link(&self)      -> u64 { self.sh_link.into() }
+    fn sh_info(&self)      -> u64 { self.sh_info.into() }
+    fn sh_addralign(&self) -> u64 { self.sh_addralign   }
+    fn sh_entsize(&self)   -> u64 { self.sh_entsize     }
 }
 
 #[rustfmt::skip]
-impl ElfXX<Elf64Ehdr, Elf64Phdr, Elf64Shdr, Elf64Addr, Elf64Half, Elf64Word, Elf64Off, Elf64Xword>
-    for Elf64
-{
+impl ElfXX<Elf64Ehdr, Elf64Phdr, Elf64Shdr> for Elf64 {
     fn add_ehdr_ranges(ehdr: &Elf64Ehdr, ranges: &mut Ranges) {
         ranges.add_range(0,  ehdr.e_ehsize as usize, RangeType::FileHeader);
         ranges.add_range(16, 2, RangeType::HeaderField("e_type"));

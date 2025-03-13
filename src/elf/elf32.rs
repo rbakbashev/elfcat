@@ -166,53 +166,51 @@ impl ElfHeader for Elf32Shdr {
 }
 
 #[rustfmt::skip]
-impl ElfXXEhdr<Elf32Addr, Elf32Half, Elf32Word, Elf32Off> for Elf32Ehdr {
-    fn e_ident(&self)     -> [u8; 16]  { self.e_ident     }
-    fn e_type(&self)      -> Elf32Half { self.e_type      }
-    fn e_machine(&self)   -> Elf32Half { self.e_machine   }
-    fn e_version(&self)   -> Elf32Word { self.e_version   }
-    fn e_entry(&self)     -> Elf32Addr { self.e_entry     }
-    fn e_phoff(&self)     -> Elf32Off  { self.e_phoff     }
-    fn e_shoff(&self)     -> Elf32Off  { self.e_shoff     }
-    fn e_flags(&self)     -> Elf32Word { self.e_flags     }
-    fn e_ehsize(&self)    -> Elf32Half { self.e_ehsize    }
-    fn e_phentsize(&self) -> Elf32Half { self.e_phentsize }
-    fn e_phnum(&self)     -> Elf32Half { self.e_phnum     }
-    fn e_shentsize(&self) -> Elf32Half { self.e_shentsize }
-    fn e_shnum(&self)     -> Elf32Half { self.e_shnum     }
-    fn e_shstrndx(&self)  -> Elf32Half { self.e_shstrndx  }
+impl ElfXXEhdr for Elf32Ehdr {
+    fn e_ident(&self)     -> [u8; 16] { self.e_ident            }
+    fn e_type(&self)      -> u64      { self.e_type.into()      }
+    fn e_machine(&self)   -> u64      { self.e_machine.into()   }
+    fn e_version(&self)   -> u64      { self.e_version.into()   }
+    fn e_entry(&self)     -> u64      { self.e_entry.into()     }
+    fn e_phoff(&self)     -> u64      { self.e_phoff.into()     }
+    fn e_shoff(&self)     -> u64      { self.e_shoff.into()     }
+    fn e_flags(&self)     -> u64      { self.e_flags.into()     }
+    fn e_ehsize(&self)    -> u64      { self.e_ehsize.into()    }
+    fn e_phentsize(&self) -> u64      { self.e_phentsize.into() }
+    fn e_phnum(&self)     -> u64      { self.e_phnum.into()     }
+    fn e_shentsize(&self) -> u64      { self.e_shentsize.into() }
+    fn e_shnum(&self)     -> u64      { self.e_shnum.into()     }
+    fn e_shstrndx(&self)  -> u64      { self.e_shstrndx.into()  }
 }
 
 #[rustfmt::skip]
-impl ElfXXPhdr<Elf32Addr, Elf32Word, Elf32Off, Elf32Word> for Elf32Phdr {
-    fn p_type(&self)   -> Elf32Word  { self.p_type   }
-    fn p_flags(&self)  -> Elf32Word  { self.p_flags  }
-    fn p_offset(&self) -> Elf32Off   { self.p_offset }
-    fn p_vaddr(&self)  -> Elf32Addr  { self.p_vaddr  }
-    fn p_paddr(&self)  -> Elf32Addr  { self.p_paddr  }
-    fn p_filesz(&self) -> Elf32Word  { self.p_filesz }
-    fn p_memsz(&self)  -> Elf32Word  { self.p_memsz  }
-    fn p_align(&self)  -> Elf32Word  { self.p_align  }
+impl ElfXXPhdr for Elf32Phdr {
+    fn p_type(&self)   -> u64 { self.p_type.into()   }
+    fn p_flags(&self)  -> u64 { self.p_flags.into()  }
+    fn p_offset(&self) -> u64 { self.p_offset.into() }
+    fn p_vaddr(&self)  -> u64 { self.p_vaddr.into()  }
+    fn p_paddr(&self)  -> u64 { self.p_paddr.into()  }
+    fn p_filesz(&self) -> u64 { self.p_filesz.into() }
+    fn p_memsz(&self)  -> u64 { self.p_memsz.into()  }
+    fn p_align(&self)  -> u64 { self.p_align.into()  }
 }
 
 #[rustfmt::skip]
-impl ElfXXShdr<Elf32Addr, Elf32Word, Elf32Off, Elf32Word> for Elf32Shdr {
-    fn sh_name(&self)      -> Elf32Word  { self.sh_name      }
-    fn sh_type(&self)      -> Elf32Word  { self.sh_type      }
-    fn sh_flags(&self)     -> Elf32Word  { self.sh_flags     }
-    fn sh_addr(&self)      -> Elf32Addr  { self.sh_addr      }
-    fn sh_offset(&self)    -> Elf32Off   { self.sh_offset    }
-    fn sh_size(&self)      -> Elf32Word  { self.sh_size      }
-    fn sh_link(&self)      -> Elf32Word  { self.sh_link      }
-    fn sh_info(&self)      -> Elf32Word  { self.sh_info      }
-    fn sh_addralign(&self) -> Elf32Word  { self.sh_addralign }
-    fn sh_entsize(&self)   -> Elf32Word  { self.sh_entsize   }
+impl ElfXXShdr for Elf32Shdr {
+    fn sh_name(&self)      -> u64 { self.sh_name.into()      }
+    fn sh_type(&self)      -> u64 { self.sh_type.into()      }
+    fn sh_flags(&self)     -> u64 { self.sh_flags.into()     }
+    fn sh_addr(&self)      -> u64 { self.sh_addr.into()      }
+    fn sh_offset(&self)    -> u64 { self.sh_offset.into()    }
+    fn sh_size(&self)      -> u64 { self.sh_size.into()      }
+    fn sh_link(&self)      -> u64 { self.sh_link.into()      }
+    fn sh_info(&self)      -> u64 { self.sh_info.into()      }
+    fn sh_addralign(&self) -> u64 { self.sh_addralign.into() }
+    fn sh_entsize(&self)   -> u64 { self.sh_entsize.into()   }
 }
 
 #[rustfmt::skip]
-impl ElfXX<Elf32Ehdr, Elf32Phdr, Elf32Shdr, Elf32Addr, Elf32Half, Elf32Word, Elf32Off, Elf32Word>
-    for Elf32
-{
+impl ElfXX<Elf32Ehdr, Elf32Phdr, Elf32Shdr> for Elf32 {
     fn add_ehdr_ranges(ehdr: &Elf32Ehdr, ranges: &mut Ranges) {
         ranges.add_range(0,  ehdr.e_ehsize as usize, RangeType::FileHeader);
         ranges.add_range(16, 2, RangeType::HeaderField("e_type"));

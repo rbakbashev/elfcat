@@ -19,46 +19,46 @@ pub trait ElfHeader: Sized {
 
 // We do this because we can't access struct fields of a generic type
 #[allow(unused)]
-pub trait ElfXXEhdr<ElfXXAddr, ElfXXHalf, ElfXXWord, ElfXXOff>: ElfHeader {
+pub trait ElfXXEhdr: ElfHeader {
     fn e_ident(&self) -> [u8; 16];
-    fn e_type(&self) -> ElfXXHalf;
-    fn e_machine(&self) -> ElfXXHalf;
-    fn e_version(&self) -> ElfXXWord;
-    fn e_entry(&self) -> ElfXXAddr;
-    fn e_phoff(&self) -> ElfXXOff;
-    fn e_shoff(&self) -> ElfXXOff;
-    fn e_flags(&self) -> ElfXXWord;
-    fn e_ehsize(&self) -> ElfXXHalf;
-    fn e_phentsize(&self) -> ElfXXHalf;
-    fn e_phnum(&self) -> ElfXXHalf;
-    fn e_shentsize(&self) -> ElfXXHalf;
-    fn e_shnum(&self) -> ElfXXHalf;
-    fn e_shstrndx(&self) -> ElfXXHalf;
+    fn e_type(&self) -> u64;
+    fn e_machine(&self) -> u64;
+    fn e_version(&self) -> u64;
+    fn e_entry(&self) -> u64;
+    fn e_phoff(&self) -> u64;
+    fn e_shoff(&self) -> u64;
+    fn e_flags(&self) -> u64;
+    fn e_ehsize(&self) -> u64;
+    fn e_phentsize(&self) -> u64;
+    fn e_phnum(&self) -> u64;
+    fn e_shentsize(&self) -> u64;
+    fn e_shnum(&self) -> u64;
+    fn e_shstrndx(&self) -> u64;
 }
 
 #[allow(unused)]
-pub trait ElfXXPhdr<ElfXXAddr, ElfXXWord, ElfXXOff, ElfXXXword>: ElfHeader {
-    fn p_type(&self) -> ElfXXWord;
-    fn p_flags(&self) -> ElfXXWord;
-    fn p_offset(&self) -> ElfXXOff;
-    fn p_vaddr(&self) -> ElfXXAddr;
-    fn p_paddr(&self) -> ElfXXAddr;
-    fn p_filesz(&self) -> ElfXXXword;
-    fn p_memsz(&self) -> ElfXXXword;
-    fn p_align(&self) -> ElfXXXword;
+pub trait ElfXXPhdr: ElfHeader {
+    fn p_type(&self) -> u64;
+    fn p_flags(&self) -> u64;
+    fn p_offset(&self) -> u64;
+    fn p_vaddr(&self) -> u64;
+    fn p_paddr(&self) -> u64;
+    fn p_filesz(&self) -> u64;
+    fn p_memsz(&self) -> u64;
+    fn p_align(&self) -> u64;
 }
 
-pub trait ElfXXShdr<ElfXXAddr, ElfXXWord, ElfXXOff, ElfXXXword>: ElfHeader {
-    fn sh_name(&self) -> ElfXXWord;
-    fn sh_type(&self) -> ElfXXWord;
-    fn sh_flags(&self) -> ElfXXXword;
-    fn sh_addr(&self) -> ElfXXAddr;
-    fn sh_offset(&self) -> ElfXXOff;
-    fn sh_size(&self) -> ElfXXXword;
-    fn sh_link(&self) -> ElfXXWord;
-    fn sh_info(&self) -> ElfXXWord;
-    fn sh_addralign(&self) -> ElfXXXword;
-    fn sh_entsize(&self) -> ElfXXXword;
+pub trait ElfXXShdr: ElfHeader {
+    fn sh_name(&self) -> u64;
+    fn sh_type(&self) -> u64;
+    fn sh_flags(&self) -> u64;
+    fn sh_addr(&self) -> u64;
+    fn sh_offset(&self) -> u64;
+    fn sh_size(&self) -> u64;
+    fn sh_link(&self) -> u64;
+    fn sh_info(&self) -> u64;
+    fn sh_addralign(&self) -> u64;
+    fn sh_entsize(&self) -> u64;
 }
 
 macro_rules! read_field {
@@ -70,19 +70,11 @@ macro_rules! read_field {
     };
 }
 
-pub trait ElfXX<EhdrT, PhdrT, ShdrT, ElfXXAddr, ElfXXHalf, ElfXXWord, ElfXXOff, ElfXXXword>
+pub trait ElfXX<EhdrT, PhdrT, ShdrT>
 where
-    EhdrT: ElfXXEhdr<ElfXXAddr, ElfXXHalf, ElfXXWord, ElfXXOff>,
-    PhdrT: ElfXXPhdr<ElfXXAddr, ElfXXWord, ElfXXOff, ElfXXXword>,
-    ShdrT: ElfXXShdr<ElfXXAddr, ElfXXWord, ElfXXOff, ElfXXXword>,
-    u32: From<ElfXXWord>,
-    u64: From<ElfXXXword>,
-    // This is a bit of a mess
-    ElfXXAddr: std::convert::TryInto<usize> + std::fmt::Display + std::fmt::LowerHex,
-    ElfXXHalf: std::convert::Into<u16> + std::fmt::Display + std::fmt::LowerHex,
-    ElfXXWord: std::convert::TryInto<usize> + std::fmt::LowerHex,
-    ElfXXOff: std::convert::TryInto<usize> + std::fmt::Display + std::fmt::LowerHex,
-    ElfXXXword: std::convert::TryInto<usize>,
+    EhdrT: ElfXXEhdr,
+    PhdrT: ElfXXPhdr,
+    ShdrT: ElfXXShdr,
 {
     fn parse(buf: &[u8], ident: &ParsedIdent, elf: &mut ParsedElf) -> Result<(), String> {
         let ehdr_size = size_of::<EhdrT>();
@@ -93,9 +85,9 @@ where
 
         let ehdr = EhdrT::from_bytes(&buf[0..ehdr_size], ident.endianness)?;
 
-        elf.shstrndx = ehdr.e_shstrndx().into();
+        elf.shstrndx = read_field!(ehdr, e_shstrndx)?;
 
-        Self::parse_ehdr(&ehdr, elf);
+        Self::parse_ehdr(&ehdr, elf)?;
 
         Self::parse_phdrs(buf, ident.endianness, &ehdr, elf)?;
 
@@ -104,16 +96,22 @@ where
         Ok(())
     }
 
-    fn parse_ehdr(ehdr: &EhdrT, elf: &mut ParsedElf) {
-        Self::push_ehdr_info(ehdr, &mut elf.information);
+    fn parse_ehdr(ehdr: &EhdrT, elf: &mut ParsedElf) -> Result<(), String> {
+        Self::push_ehdr_info(ehdr, &mut elf.information)?;
 
         Self::add_ehdr_ranges(ehdr, &mut elf.ranges);
+
+        Ok(())
     }
 
-    fn push_ehdr_info(ehdr: &EhdrT, information: &mut Vec<InfoTuple>) {
-        information.push(("e_type", "Type", type_to_string(ehdr.e_type().into())));
+    fn push_ehdr_info(ehdr: &EhdrT, information: &mut Vec<InfoTuple>) -> Result<(), String> {
+        information.push(("e_type", "Type", type_to_string(read_field!(ehdr, e_type)?)));
 
-        information.push(("e_machine", "Architecture", machine_to_string(ehdr.e_machine().into())));
+        information.push((
+            "e_machine",
+            "Architecture",
+            machine_to_string(read_field!(ehdr, e_machine)?),
+        ));
 
         information.push((
             "e_entry",
@@ -153,9 +151,11 @@ where
             ),
         ));
 
-        if u32::from(ehdr.e_flags()) != 0 {
+        if ehdr.e_flags() != 0 {
             information.push(("e_flags", "Flags", format!("{:#x}", ehdr.e_flags())));
         }
+
+        Ok(())
     }
 
     fn add_ehdr_ranges(ehdr: &EhdrT, ranges: &mut Ranges);
@@ -167,9 +167,10 @@ where
         elf: &mut ParsedElf,
     ) -> Result<(), String> {
         let mut start = read_field!(ehdr, e_phoff)?;
+        let phnum = read_field!(ehdr, e_phnum)?;
         let phsize = size_of::<PhdrT>();
 
-        for i in 0..ehdr.e_phnum().into() {
+        for i in 0..phnum {
             let phdr = PhdrT::from_bytes(&buf[start..start + phsize], endianness)?;
             let parsed = Self::parse_phdr(&phdr)?;
             let ranges = &mut elf.ranges;
@@ -191,6 +192,8 @@ where
     }
 
     fn parse_phdr(phdr: &PhdrT) -> Result<ParsedPhdr, String> {
+        let ptype = read_field!(phdr, p_type)?;
+        let flags = pflags_to_string(read_field!(phdr, p_flags)?);
         let file_offset = read_field!(phdr, p_offset)?;
         let file_size = read_field!(phdr, p_filesz)?;
         let vaddr = read_field!(phdr, p_vaddr)?;
@@ -198,8 +201,8 @@ where
         let alignment = read_field!(phdr, p_align)?;
 
         Ok(ParsedPhdr {
-            ptype: phdr.p_type().into(),
-            flags: pflags_to_string(phdr.p_flags().into()),
+            ptype,
+            flags,
             file_offset,
             file_size,
             vaddr,
@@ -217,9 +220,10 @@ where
         elf: &mut ParsedElf,
     ) -> Result<(), String> {
         let mut start = read_field!(ehdr, e_shoff)?;
+        let shnum = read_field!(ehdr, e_shnum)?;
         let shsize = size_of::<ShdrT>();
 
-        for i in 0..ehdr.e_shnum().into() {
+        for i in 0..shnum {
             let shdr = ShdrT::from_bytes(&buf[start..start + shsize], endianness)?;
             let parsed = Self::parse_shdr(buf, endianness, &shdr)?;
             let ranges = &mut elf.ranges;
@@ -242,6 +246,8 @@ where
 
     fn parse_shdr(_buf: &[u8], _endianness: u8, shdr: &ShdrT) -> Result<ParsedShdr, String> {
         let name = read_field!(shdr, sh_name)?;
+        let shtype = read_field!(shdr, sh_type)?;
+        let flags = read_field!(shdr, sh_flags)?;
         let addr = read_field!(shdr, sh_addr)?;
         let file_offset = read_field!(shdr, sh_offset)?;
         let size = read_field!(shdr, sh_size)?;
@@ -252,8 +258,8 @@ where
 
         Ok(ParsedShdr {
             name,
-            shtype: shdr.sh_type().into(),
-            flags: shdr.sh_flags().into(),
+            shtype,
+            flags,
             addr,
             file_offset,
             size,
