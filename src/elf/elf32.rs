@@ -1,6 +1,7 @@
 use super::elfxx::*;
 use super::parser::*;
 use crate::field_getter;
+use crate::impl_elfheader;
 use std::convert::TryInto;
 
 type Elf32Addr = u32;
@@ -25,29 +26,35 @@ pub struct Elf32Ehdr {
     e_shstrndx: Elf32Half,
 }
 
-pub struct Elf32Phdr {
-    p_type: Elf32Word,
-    p_offset: Elf32Off,
-    p_vaddr: Elf32Addr,
-    p_paddr: Elf32Addr,
-    p_filesz: Elf32Word,
-    p_memsz: Elf32Word,
-    p_flags: Elf32Word,
-    p_align: Elf32Word,
-}
+impl_elfheader!(
+    "program header",
+    pub struct Elf32Phdr {
+        p_type: Elf32Word,
+        p_offset: Elf32Off,
+        p_vaddr: Elf32Addr,
+        p_paddr: Elf32Addr,
+        p_filesz: Elf32Word,
+        p_memsz: Elf32Word,
+        p_flags: Elf32Word,
+        p_align: Elf32Word,
+    }
+);
 
-pub struct Elf32Shdr {
-    sh_name: Elf32Word,
-    sh_type: Elf32Word,
-    sh_flags: Elf32Word,
-    sh_addr: Elf32Addr,
-    sh_offset: Elf32Off,
-    sh_size: Elf32Word,
-    sh_link: Elf32Word,
-    sh_info: Elf32Word,
-    sh_addralign: Elf32Word,
-    sh_entsize: Elf32Word,
-}
+impl_elfheader!(
+    "section header",
+    pub struct Elf32Shdr {
+        sh_name: Elf32Word,
+        sh_type: Elf32Word,
+        sh_flags: Elf32Word,
+        sh_addr: Elf32Addr,
+        sh_offset: Elf32Off,
+        sh_size: Elf32Word,
+        sh_link: Elf32Word,
+        sh_info: Elf32Word,
+        sh_addralign: Elf32Word,
+        sh_entsize: Elf32Word,
+    }
+);
 
 pub struct Elf32;
 
@@ -92,76 +99,6 @@ impl ElfHeader for Elf32Ehdr {
             e_shentsize: Elf32Half::from_be_bytes(buf[46..48].try_into()?),
             e_shnum:     Elf32Half::from_be_bytes(buf[48..50].try_into()?),
             e_shstrndx:  Elf32Half::from_be_bytes(buf[50..52].try_into()?),
-        })
-    }
-}
-
-#[rustfmt::skip]
-impl ElfHeader for Elf32Phdr {
-    fn describe() -> &'static str {
-        "program header"
-    }
-
-    fn from_le_bytes(buf: &[u8]) -> Result<Elf32Phdr, ReadErr> {
-        Ok(Elf32Phdr {
-            p_type:   Elf32Word::from_le_bytes(buf[ 0.. 4].try_into()?),
-            p_offset: Elf32Off:: from_le_bytes(buf[ 4.. 8].try_into()?),
-            p_vaddr:  Elf32Addr::from_le_bytes(buf[ 8..12].try_into()?),
-            p_paddr:  Elf32Addr::from_le_bytes(buf[12..16].try_into()?),
-            p_filesz: Elf32Word::from_le_bytes(buf[16..20].try_into()?),
-            p_memsz:  Elf32Word::from_le_bytes(buf[20..24].try_into()?),
-            p_flags:  Elf32Word::from_le_bytes(buf[24..28].try_into()?),
-            p_align:  Elf32Word::from_le_bytes(buf[28..32].try_into()?),
-        })
-    }
-
-    fn from_be_bytes(buf: &[u8]) -> Result<Elf32Phdr, ReadErr> {
-        Ok(Elf32Phdr {
-            p_type:   Elf32Word::from_be_bytes(buf[ 0.. 4].try_into()?),
-            p_offset: Elf32Off:: from_be_bytes(buf[ 4.. 8].try_into()?),
-            p_vaddr:  Elf32Addr::from_be_bytes(buf[ 8..12].try_into()?),
-            p_paddr:  Elf32Addr::from_be_bytes(buf[12..16].try_into()?),
-            p_filesz: Elf32Word::from_be_bytes(buf[16..20].try_into()?),
-            p_memsz:  Elf32Word::from_be_bytes(buf[20..24].try_into()?),
-            p_flags:  Elf32Word::from_be_bytes(buf[24..28].try_into()?),
-            p_align:  Elf32Word::from_be_bytes(buf[28..32].try_into()?),
-        })
-    }
-}
-
-#[rustfmt::skip]
-impl ElfHeader for Elf32Shdr {
-    fn describe() -> &'static str {
-        "section header"
-    }
-
-    fn from_le_bytes(buf: &[u8]) -> Result<Elf32Shdr, ReadErr> {
-        Ok(Elf32Shdr {
-            sh_name:      Elf32Word::from_le_bytes(buf[ 0.. 4].try_into()?),
-            sh_type:      Elf32Word::from_le_bytes(buf[ 4.. 8].try_into()?),
-            sh_flags:     Elf32Word::from_le_bytes(buf[ 8..12].try_into()?),
-            sh_addr:      Elf32Addr::from_le_bytes(buf[12..16].try_into()?),
-            sh_offset:    Elf32Off:: from_le_bytes(buf[16..20].try_into()?),
-            sh_size:      Elf32Word::from_le_bytes(buf[20..24].try_into()?),
-            sh_link:      Elf32Word::from_le_bytes(buf[24..28].try_into()?),
-            sh_info:      Elf32Word::from_le_bytes(buf[28..32].try_into()?),
-            sh_addralign: Elf32Word::from_le_bytes(buf[32..36].try_into()?),
-            sh_entsize:   Elf32Word::from_le_bytes(buf[36..40].try_into()?),
-        })
-    }
-
-    fn from_be_bytes(buf: &[u8]) -> Result<Elf32Shdr, ReadErr> {
-        Ok(Elf32Shdr {
-            sh_name:      Elf32Word::from_be_bytes(buf[ 0.. 4].try_into()?),
-            sh_type:      Elf32Word::from_be_bytes(buf[ 4.. 8].try_into()?),
-            sh_flags:     Elf32Word::from_be_bytes(buf[ 8..12].try_into()?),
-            sh_addr:      Elf32Addr::from_be_bytes(buf[12..16].try_into()?),
-            sh_offset:    Elf32Off:: from_be_bytes(buf[16..20].try_into()?),
-            sh_size:      Elf32Word::from_be_bytes(buf[20..24].try_into()?),
-            sh_link:      Elf32Word::from_be_bytes(buf[24..28].try_into()?),
-            sh_info:      Elf32Word::from_be_bytes(buf[28..32].try_into()?),
-            sh_addralign: Elf32Word::from_be_bytes(buf[32..36].try_into()?),
-            sh_entsize:   Elf32Word::from_be_bytes(buf[36..40].try_into()?),
         })
     }
 }

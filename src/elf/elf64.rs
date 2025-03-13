@@ -1,6 +1,6 @@
 use super::elfxx::*;
 use super::parser::*;
-use crate::field_getter;
+use crate::{field_getter, impl_elfheader};
 use std::convert::TryInto;
 
 type Elf64Addr = u64;
@@ -26,29 +26,35 @@ pub struct Elf64Ehdr {
     e_shstrndx: Elf64Half,
 }
 
-pub struct Elf64Phdr {
-    p_type: Elf64Word,
-    p_flags: Elf64Word,
-    p_offset: Elf64Off,
-    p_vaddr: Elf64Addr,
-    p_paddr: Elf64Addr,
-    p_filesz: Elf64Xword,
-    p_memsz: Elf64Xword,
-    p_align: Elf64Xword,
-}
+impl_elfheader!(
+    "program header",
+    pub struct Elf64Phdr {
+        p_type: Elf64Word,
+        p_flags: Elf64Word,
+        p_offset: Elf64Off,
+        p_vaddr: Elf64Addr,
+        p_paddr: Elf64Addr,
+        p_filesz: Elf64Xword,
+        p_memsz: Elf64Xword,
+        p_align: Elf64Xword,
+    }
+);
 
-pub struct Elf64Shdr {
-    sh_name: Elf64Word,
-    sh_type: Elf64Word,
-    sh_flags: Elf64Xword,
-    sh_addr: Elf64Addr,
-    sh_offset: Elf64Off,
-    sh_size: Elf64Xword,
-    sh_link: Elf64Word,
-    sh_info: Elf64Word,
-    sh_addralign: Elf64Xword,
-    sh_entsize: Elf64Xword,
-}
+impl_elfheader!(
+    "section header",
+    pub struct Elf64Shdr {
+        sh_name: Elf64Word,
+        sh_type: Elf64Word,
+        sh_flags: Elf64Xword,
+        sh_addr: Elf64Addr,
+        sh_offset: Elf64Off,
+        sh_size: Elf64Xword,
+        sh_link: Elf64Word,
+        sh_info: Elf64Word,
+        sh_addralign: Elf64Xword,
+        sh_entsize: Elf64Xword,
+    }
+);
 
 pub struct Elf64;
 
@@ -94,76 +100,6 @@ impl ElfHeader for Elf64Ehdr {
             e_shentsize: Elf64Half::from_be_bytes(buf[58..60].try_into()?),
             e_shnum:     Elf64Half::from_be_bytes(buf[60..62].try_into()?),
             e_shstrndx:  Elf64Half::from_be_bytes(buf[62..64].try_into()?),
-        })
-    }
-}
-
-#[rustfmt::skip]
-impl ElfHeader for Elf64Phdr {
-    fn describe() -> &'static str {
-        "program header"
-    }
-
-    fn from_le_bytes(buf: &[u8]) -> Result<Elf64Phdr, ReadErr> {
-        Ok(Elf64Phdr {
-            p_type:   Elf64Word:: from_le_bytes(buf[ 0.. 4].try_into()?),
-            p_flags:  Elf64Word:: from_le_bytes(buf[ 4.. 8].try_into()?),
-            p_offset: Elf64Off::  from_le_bytes(buf[ 8..16].try_into()?),
-            p_vaddr:  Elf64Addr:: from_le_bytes(buf[16..24].try_into()?),
-            p_paddr:  Elf64Addr:: from_le_bytes(buf[24..32].try_into()?),
-            p_filesz: Elf64Xword::from_le_bytes(buf[32..40].try_into()?),
-            p_memsz:  Elf64Xword::from_le_bytes(buf[40..48].try_into()?),
-            p_align:  Elf64Xword::from_le_bytes(buf[48..56].try_into()?),
-        })
-    }
-
-    fn from_be_bytes(buf: &[u8]) -> Result<Elf64Phdr, ReadErr> {
-        Ok(Elf64Phdr {
-            p_type:   Elf64Word:: from_be_bytes(buf[ 0.. 4].try_into()?),
-            p_flags:  Elf64Word:: from_be_bytes(buf[ 4.. 8].try_into()?),
-            p_offset: Elf64Off::  from_be_bytes(buf[ 8..16].try_into()?),
-            p_vaddr:  Elf64Addr:: from_be_bytes(buf[16..24].try_into()?),
-            p_paddr:  Elf64Addr:: from_be_bytes(buf[24..32].try_into()?),
-            p_filesz: Elf64Xword::from_be_bytes(buf[32..40].try_into()?),
-            p_memsz:  Elf64Xword::from_be_bytes(buf[40..48].try_into()?),
-            p_align:  Elf64Xword::from_be_bytes(buf[48..56].try_into()?),
-        })
-    }
-}
-
-#[rustfmt::skip]
-impl ElfHeader for Elf64Shdr {
-    fn describe() -> &'static str {
-        "section header"
-    }
-
-    fn from_le_bytes(buf: &[u8]) -> Result<Elf64Shdr, ReadErr> {
-        Ok(Elf64Shdr {
-            sh_name:      Elf64Word:: from_le_bytes(buf[ 0.. 4].try_into()?),
-            sh_type:      Elf64Word:: from_le_bytes(buf[ 4.. 8].try_into()?),
-            sh_flags:     Elf64Xword::from_le_bytes(buf[ 8..16].try_into()?),
-            sh_addr:      Elf64Addr:: from_le_bytes(buf[16..24].try_into()?),
-            sh_offset:    Elf64Off::  from_le_bytes(buf[24..32].try_into()?),
-            sh_size:      Elf64Xword::from_le_bytes(buf[32..40].try_into()?),
-            sh_link:      Elf64Word:: from_le_bytes(buf[40..44].try_into()?),
-            sh_info:      Elf64Word:: from_le_bytes(buf[44..48].try_into()?),
-            sh_addralign: Elf64Xword::from_le_bytes(buf[48..56].try_into()?),
-            sh_entsize:   Elf64Xword::from_le_bytes(buf[56..64].try_into()?),
-        })
-    }
-
-    fn from_be_bytes(buf: &[u8]) -> Result<Elf64Shdr, ReadErr> {
-        Ok(Elf64Shdr {
-            sh_name:      Elf64Word:: from_be_bytes(buf[ 0.. 4].try_into()?),
-            sh_type:      Elf64Word:: from_be_bytes(buf[ 4.. 8].try_into()?),
-            sh_flags:     Elf64Xword::from_be_bytes(buf[ 8..16].try_into()?),
-            sh_addr:      Elf64Addr:: from_be_bytes(buf[16..24].try_into()?),
-            sh_offset:    Elf64Off::  from_be_bytes(buf[24..32].try_into()?),
-            sh_size:      Elf64Xword::from_be_bytes(buf[32..40].try_into()?),
-            sh_link:      Elf64Word:: from_be_bytes(buf[40..44].try_into()?),
-            sh_info:      Elf64Word:: from_be_bytes(buf[44..48].try_into()?),
-            sh_addralign: Elf64Xword::from_be_bytes(buf[48..56].try_into()?),
-            sh_entsize:   Elf64Xword::from_be_bytes(buf[56..64].try_into()?),
         })
     }
 }
