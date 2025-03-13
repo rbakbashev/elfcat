@@ -153,7 +153,7 @@ fn generate_help(o: &mut String) {
 
 fn generate_right_menu(o: &mut String) {
     let credits = format!("generated with elfcat {}", env!("CARGO_PKG_VERSION"));
-    let url = "https://github.com/ruslashev/elfcat";
+    let url = "https://github.com/rbakbashev/elfcat";
 
     w!(o, 3, "<a id='credits' href='{}'>{}</a>", url, credits);
 

@@ -4,6 +4,6 @@ version = "0.1.8"
 description = "ELF visualizer. Generates HTML files from ELF binaries."
 authors = ["Ruslan Akbashev <ruslashev@gmail.com>"]
 edition = "2021"
-repository = "https://github.com/ruslashev/elfcat"
+repository = "https://github.com/rbakbashev/elfcat"
 license = "Zlib"
 readme = "readme.md"

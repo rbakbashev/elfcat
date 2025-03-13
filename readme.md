@@ -9,7 +9,7 @@ elfcat - ELF visualizer. Generates HTML files from ELF binaries.
 
    This is what the following small example ELF file looks like:
 
-   http://ruslashev.github.io/elfcat/hello_world.html
+   http://rbakbashev.github.io/elfcat/hello_world.html
 
    Steps to create it:
 
