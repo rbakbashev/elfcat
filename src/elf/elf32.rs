@@ -52,9 +52,10 @@ pub struct Elf32;
 
 #[rustfmt::skip]
 impl ElfHeader for Elf32Ehdr {
-    fn describe() -> String {
-        String::from("file header")
+    fn describe() -> &'static str {
+        "file header"
     }
+
     fn from_le_bytes(buf: &[u8]) -> Result<Elf32Ehdr, ReadErr> {
         Ok(Elf32Ehdr {
             e_ident:     buf[0..16].try_into()?,
@@ -73,6 +74,7 @@ impl ElfHeader for Elf32Ehdr {
             e_shstrndx:  Elf32Half::from_le_bytes(buf[50..52].try_into()?),
         })
     }
+
     fn from_be_bytes(buf: &[u8]) -> Result<Elf32Ehdr, ReadErr> {
         Ok(Elf32Ehdr {
             e_ident:     buf[0..16].try_into()?,
@@ -95,9 +97,10 @@ impl ElfHeader for Elf32Ehdr {
 
 #[rustfmt::skip]
 impl ElfHeader for Elf32Phdr {
-    fn describe() -> String {
-        String::from("program header")
+    fn describe() -> &'static str {
+        "program header"
     }
+
     fn from_le_bytes(buf: &[u8]) -> Result<Elf32Phdr, ReadErr> {
         Ok(Elf32Phdr {
             p_type:   Elf32Word::from_le_bytes(buf[ 0.. 4].try_into()?),
@@ -110,6 +113,7 @@ impl ElfHeader for Elf32Phdr {
             p_align:  Elf32Word::from_le_bytes(buf[28..32].try_into()?),
         })
     }
+
     fn from_be_bytes(buf: &[u8]) -> Result<Elf32Phdr, ReadErr> {
         Ok(Elf32Phdr {
             p_type:   Elf32Word::from_be_bytes(buf[ 0.. 4].try_into()?),
@@ -126,9 +130,10 @@ impl ElfHeader for Elf32Phdr {
 
 #[rustfmt::skip]
 impl ElfHeader for Elf32Shdr {
-    fn describe() -> String {
-        String::from("section header")
+    fn describe() -> &'static str {
+        "section header"
     }
+
     fn from_le_bytes(buf: &[u8]) -> Result<Elf32Shdr, ReadErr> {
         Ok(Elf32Shdr {
             sh_name:      Elf32Word::from_le_bytes(buf[ 0.. 4].try_into()?),
@@ -143,6 +148,7 @@ impl ElfHeader for Elf32Shdr {
             sh_entsize:   Elf32Word::from_le_bytes(buf[36..40].try_into()?),
         })
     }
+
     fn from_be_bytes(buf: &[u8]) -> Result<Elf32Shdr, ReadErr> {
         Ok(Elf32Shdr {
             sh_name:      Elf32Word::from_be_bytes(buf[ 0.. 4].try_into()?),

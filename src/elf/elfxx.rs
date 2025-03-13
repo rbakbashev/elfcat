@@ -5,7 +5,7 @@ use std::mem::size_of;
 pub trait ElfHeader: Sized {
     fn from_le_bytes(buf: &[u8]) -> Result<Self, ReadErr>;
     fn from_be_bytes(buf: &[u8]) -> Result<Self, ReadErr>;
-    fn describe() -> String;
+    fn describe() -> &'static str;
 
     fn from_bytes(buf: &[u8], endianness: u8) -> Result<Self, String> {
         if endianness == ELF_DATA2LSB {
@@ -18,6 +18,7 @@ pub trait ElfHeader: Sized {
 }
 
 // We do this because we can't access struct fields of a generic type
+#[allow(unused)]
 pub trait ElfXXEhdr<ElfXXAddr, ElfXXHalf, ElfXXWord, ElfXXOff>: ElfHeader {
     fn e_ident(&self) -> [u8; 16];
     fn e_type(&self) -> ElfXXHalf;
@@ -35,6 +36,7 @@ pub trait ElfXXEhdr<ElfXXAddr, ElfXXHalf, ElfXXWord, ElfXXOff>: ElfHeader {
     fn e_shstrndx(&self) -> ElfXXHalf;
 }
 
+#[allow(unused)]
 pub trait ElfXXPhdr<ElfXXAddr, ElfXXWord, ElfXXOff, ElfXXXword>: ElfHeader {
     fn p_type(&self) -> ElfXXWord;
     fn p_flags(&self) -> ElfXXWord;

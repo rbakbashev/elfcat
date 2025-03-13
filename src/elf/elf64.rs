@@ -54,9 +54,10 @@ pub struct Elf64;
 // All this just to avoid unsafe. This should be improved.
 #[rustfmt::skip]
 impl ElfHeader for Elf64Ehdr {
-    fn describe() -> String {
-        String::from("file header")
+    fn describe() -> &'static str {
+        "file header"
     }
+
     fn from_le_bytes(buf: &[u8]) -> Result<Elf64Ehdr, ReadErr> {
         Ok(Elf64Ehdr {
             e_ident:     buf[0..16].try_into()?,
@@ -75,6 +76,7 @@ impl ElfHeader for Elf64Ehdr {
             e_shstrndx:  Elf64Half::from_le_bytes(buf[62..64].try_into()?),
         })
     }
+
     fn from_be_bytes(buf: &[u8]) -> Result<Elf64Ehdr, ReadErr> {
         Ok(Elf64Ehdr {
             e_ident:     buf[0..16].try_into()?,
@@ -97,9 +99,10 @@ impl ElfHeader for Elf64Ehdr {
 
 #[rustfmt::skip]
 impl ElfHeader for Elf64Phdr {
-    fn describe() -> String {
-        String::from("program header")
+    fn describe() -> &'static str {
+        "program header"
     }
+
     fn from_le_bytes(buf: &[u8]) -> Result<Elf64Phdr, ReadErr> {
         Ok(Elf64Phdr {
             p_type:   Elf64Word:: from_le_bytes(buf[ 0.. 4].try_into()?),
@@ -112,6 +115,7 @@ impl ElfHeader for Elf64Phdr {
             p_align:  Elf64Xword::from_le_bytes(buf[48..56].try_into()?),
         })
     }
+
     fn from_be_bytes(buf: &[u8]) -> Result<Elf64Phdr, ReadErr> {
         Ok(Elf64Phdr {
             p_type:   Elf64Word:: from_be_bytes(buf[ 0.. 4].try_into()?),
@@ -128,9 +132,10 @@ impl ElfHeader for Elf64Phdr {
 
 #[rustfmt::skip]
 impl ElfHeader for Elf64Shdr {
-    fn describe() -> String {
-        String::from("section header")
+    fn describe() -> &'static str {
+        "section header"
     }
+
     fn from_le_bytes(buf: &[u8]) -> Result<Elf64Shdr, ReadErr> {
         Ok(Elf64Shdr {
             sh_name:      Elf64Word:: from_le_bytes(buf[ 0.. 4].try_into()?),
@@ -145,6 +150,7 @@ impl ElfHeader for Elf64Shdr {
             sh_entsize:   Elf64Xword::from_le_bytes(buf[56..64].try_into()?),
         })
     }
+
     fn from_be_bytes(buf: &[u8]) -> Result<Elf64Shdr, ReadErr> {
         Ok(Elf64Shdr {
             sh_name:      Elf64Word:: from_be_bytes(buf[ 0.. 4].try_into()?),
