@@ -1,5 +1,6 @@
 use super::elfxx::*;
 use super::parser::*;
+use crate::field_getter;
 use std::convert::TryInto;
 
 type Elf32Addr = u32;
@@ -165,48 +166,47 @@ impl ElfHeader for Elf32Shdr {
     }
 }
 
-#[rustfmt::skip]
 impl ElfXXEhdr for Elf32Ehdr {
-    fn e_ident(&self)     -> [u8; 16] { self.e_ident            }
-    fn e_type(&self)      -> u64      { self.e_type.into()      }
-    fn e_machine(&self)   -> u64      { self.e_machine.into()   }
-    fn e_version(&self)   -> u64      { self.e_version.into()   }
-    fn e_entry(&self)     -> u64      { self.e_entry.into()     }
-    fn e_phoff(&self)     -> u64      { self.e_phoff.into()     }
-    fn e_shoff(&self)     -> u64      { self.e_shoff.into()     }
-    fn e_flags(&self)     -> u64      { self.e_flags.into()     }
-    fn e_ehsize(&self)    -> u64      { self.e_ehsize.into()    }
-    fn e_phentsize(&self) -> u64      { self.e_phentsize.into() }
-    fn e_phnum(&self)     -> u64      { self.e_phnum.into()     }
-    fn e_shentsize(&self) -> u64      { self.e_shentsize.into() }
-    fn e_shnum(&self)     -> u64      { self.e_shnum.into()     }
-    fn e_shstrndx(&self)  -> u64      { self.e_shstrndx.into()  }
+    fn e_ident(&self) -> [u8; 16] {
+        self.e_ident
+    }
+    field_getter!(e_type);
+    field_getter!(e_machine);
+    field_getter!(e_version);
+    field_getter!(e_entry);
+    field_getter!(e_phoff);
+    field_getter!(e_shoff);
+    field_getter!(e_flags);
+    field_getter!(e_ehsize);
+    field_getter!(e_phentsize);
+    field_getter!(e_phnum);
+    field_getter!(e_shentsize);
+    field_getter!(e_shnum);
+    field_getter!(e_shstrndx);
 }
 
-#[rustfmt::skip]
 impl ElfXXPhdr for Elf32Phdr {
-    fn p_type(&self)   -> u64 { self.p_type.into()   }
-    fn p_flags(&self)  -> u64 { self.p_flags.into()  }
-    fn p_offset(&self) -> u64 { self.p_offset.into() }
-    fn p_vaddr(&self)  -> u64 { self.p_vaddr.into()  }
-    fn p_paddr(&self)  -> u64 { self.p_paddr.into()  }
-    fn p_filesz(&self) -> u64 { self.p_filesz.into() }
-    fn p_memsz(&self)  -> u64 { self.p_memsz.into()  }
-    fn p_align(&self)  -> u64 { self.p_align.into()  }
+    field_getter!(p_type);
+    field_getter!(p_flags);
+    field_getter!(p_offset);
+    field_getter!(p_vaddr);
+    field_getter!(p_paddr);
+    field_getter!(p_filesz);
+    field_getter!(p_memsz);
+    field_getter!(p_align);
 }
 
-#[rustfmt::skip]
 impl ElfXXShdr for Elf32Shdr {
-    fn sh_name(&self)      -> u64 { self.sh_name.into()      }
-    fn sh_type(&self)      -> u64 { self.sh_type.into()      }
-    fn sh_flags(&self)     -> u64 { self.sh_flags.into()     }
-    fn sh_addr(&self)      -> u64 { self.sh_addr.into()      }
-    fn sh_offset(&self)    -> u64 { self.sh_offset.into()    }
-    fn sh_size(&self)      -> u64 { self.sh_size.into()      }
-    fn sh_link(&self)      -> u64 { self.sh_link.into()      }
-    fn sh_info(&self)      -> u64 { self.sh_info.into()      }
-    fn sh_addralign(&self) -> u64 { self.sh_addralign.into() }
-    fn sh_entsize(&self)   -> u64 { self.sh_entsize.into()   }
+    field_getter!(sh_name);
+    field_getter!(sh_type);
+    field_getter!(sh_flags);
+    field_getter!(sh_addr);
+    field_getter!(sh_offset);
+    field_getter!(sh_size);
+    field_getter!(sh_link);
+    field_getter!(sh_info);
+    field_getter!(sh_addralign);
+    field_getter!(sh_entsize);
 }
 
 #[rustfmt::skip]
