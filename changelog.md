@@ -1,3 +1,8 @@
+### 0.1.9
+
+ * Fix using wrong values in the "Extra info" (`sh_info`) field in section header infotables (Thanks
+   @amiremohamadi)
+
 ### 0.1.8
 
  * Add pretty-printing on errors instead of just panicking
