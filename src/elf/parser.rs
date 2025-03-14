@@ -382,13 +382,7 @@ impl<'a> StrTab<'a> {
 
         for end_idx in start_idx..start_idx + self.section_size {
             if self.strings[end_idx] == 0 {
-                let maybe = std::str::from_utf8(&self.strings[start_idx..end_idx]);
-
-                if maybe.is_err() {
-                    return "";
-                }
-
-                return maybe.unwrap();
+                return std::str::from_utf8(&self.strings[start_idx..end_idx]).unwrap_or("");
             }
         }
 

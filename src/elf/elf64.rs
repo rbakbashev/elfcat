@@ -173,9 +173,9 @@ impl ElfXXEhdr for Elf64Ehdr {
     fn e_type(&self)      -> u64      { self.e_type.into()      }
     fn e_machine(&self)   -> u64      { self.e_machine.into()   }
     fn e_version(&self)   -> u64      { self.e_version.into()   }
-    fn e_entry(&self)     -> u64      { self.e_entry.into()     }
-    fn e_phoff(&self)     -> u64      { self.e_phoff.into()     }
-    fn e_shoff(&self)     -> u64      { self.e_shoff.into()     }
+    fn e_entry(&self)     -> u64      { self.e_entry            }
+    fn e_phoff(&self)     -> u64      { self.e_phoff            }
+    fn e_shoff(&self)     -> u64      { self.e_shoff            }
     fn e_flags(&self)     -> u64      { self.e_flags.into()     }
     fn e_ehsize(&self)    -> u64      { self.e_ehsize.into()    }
     fn e_phentsize(&self) -> u64      { self.e_phentsize.into() }

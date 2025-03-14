@@ -179,7 +179,7 @@ where
                 ranges.add_range(parsed.file_offset, parsed.file_size, RangeType::Segment(i));
             }
 
-            ranges.add_range(start, phsize, RangeType::ProgramHeader(i as u32));
+            ranges.add_range(start, phsize, RangeType::ProgramHeader(i.into()));
 
             Self::add_phdr_ranges(start, ranges);
 
@@ -232,7 +232,7 @@ where
                 ranges.add_range(parsed.file_offset, parsed.size, RangeType::Section(i));
             }
 
-            ranges.add_range(start, shsize, RangeType::SectionHeader(i as u32));
+            ranges.add_range(start, shsize, RangeType::SectionHeader(i.into()));
 
             Self::add_shdr_ranges(start, ranges);
 
