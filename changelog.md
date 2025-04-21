@@ -1,3 +1,8 @@
+### 0.1.10
+
+ * Do not strip the original file extension when determining the file name of the report. That is,
+   instead of `myfile.o` → `myfile.html`, it is now `myfile.o.html`, to avoid conflicts with `myfile`.
+
 ### 0.1.9
 
  * Fix using wrong values in the "Extra info" (`sh_info`) field in section header infotables (Thanks
