@@ -62,12 +62,8 @@ pub fn basename(path: &str) -> Option<&str> {
     Path::new(path).file_name()?.to_str()
 }
 
-fn stem(path: &str) -> Option<&str> {
-    Path::new(path).file_stem()?.to_str()
-}
-
 pub fn construct_filename(filename: &str) -> Option<String> {
-    let name = stem(basename(filename)?)?.to_string() + ".html";
+    let name = basename(filename)?.to_string() + ".html";
 
     Some(name)
 }
