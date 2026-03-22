@@ -27,3 +27,46 @@ function highlightClasses(primaryClass, secondaryClass) {
     addPairHighlighting(secondaryElem, primaryElem);
 }
 
+function addStrtabSectionSyncHighlighting() {
+    let activeEntries = [];
+
+    function clearActiveEntries() {
+        for (let entry of activeEntries) {
+            entry.classList.remove("strtab_entry_active");
+        }
+        activeEntries = [];
+    }
+
+    function getRefClass(target) {
+        let strElem = target.closest(".strtab_str");
+
+        if (strElem === null) {
+            return null;
+        }
+
+        for (let cls of strElem.classList) {
+            if (cls.startsWith("strtab_ref")) {
+                return cls;
+            }
+        }
+
+        return null;
+    }
+
+    document.addEventListener("mouseover", function(event) {
+        let refClass = getRefClass(event.target);
+
+        clearActiveEntries();
+
+        if (refClass === null) {
+            return;
+        }
+
+        let entries = document.querySelectorAll(".strtab_entry." + refClass);
+
+        for (let entry of entries) {
+            entry.classList.add("strtab_entry_active");
+            activeEntries.push(entry);
+        }
+    }, false);
+}
