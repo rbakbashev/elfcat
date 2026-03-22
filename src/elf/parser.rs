@@ -21,6 +21,7 @@ pub enum RangeType {
     ShdrField(&'static str),
     Segment(u16),
     Section(u16),
+    StrtabString,
     SegmentSubrange,
 }
 
@@ -96,6 +97,7 @@ impl RangeType {
             RangeType::SectionHeader(idx) => format!("class='bin_shdr{} shdr'", idx),
             RangeType::Segment(idx) => format!("class='bin_segment{} segment'", idx),
             RangeType::Section(idx) => format!("class='bin_section{} section hover'", idx),
+            RangeType::StrtabString => "class='strtab_str'".to_string(),
             RangeType::SegmentSubrange => "class='segment_subrange hover'".to_string(),
             RangeType::HeaderField(field)
             | RangeType::PhdrField(field)
@@ -283,6 +285,39 @@ impl ParsedElf<'_> {
             let section = &self.contents[shdr.file_offset..shdr.file_offset + shdr.size];
 
             self.shnstrtab.populate(section, shdr.size);
+        }
+
+        self.add_strtab_ranges();
+    }
+
+    fn add_strtab_ranges(&mut self) {
+        let mut str_ranges: Vec<(usize, usize)> = Vec::new();
+
+        for shdr in &self.shdrs {
+            if shdr.shtype != SHT_STRTAB || shdr.size == 0 {
+                continue;
+            }
+
+            let section_start = shdr.file_offset;
+            let section = &self.contents[section_start..section_start + shdr.size];
+            let mut curr_start = 0;
+
+            for (idx, byte) in section.iter().enumerate() {
+                if *byte == 0 {
+                    if idx > curr_start {
+                        str_ranges.push((section_start + curr_start, idx - curr_start));
+                    }
+                    curr_start = idx + 1;
+                }
+            }
+
+            if curr_start < section.len() {
+                str_ranges.push((section_start + curr_start, section.len() - curr_start));
+            }
+        }
+
+        for (start, len) in str_ranges {
+            self.ranges.add_range(start, len, RangeType::StrtabString);
         }
     }
 

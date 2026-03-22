@@ -223,6 +223,9 @@ li {
 .section {
   background-color: #f9f;
 }
+.strtab_str:hover {
+  background-color: #9ee;
+}
 /* there are only sections inside segments due to code */
 .segment > .section, .segm_sect_legend {
   background: repeating-linear-gradient(
