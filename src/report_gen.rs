@@ -235,6 +235,18 @@ fn format_string_slice(slice: &[u8]) -> String {
         .fold(String::new(), |s, b| s + &format_string_byte(*b))
 }
 
+fn escape_html_str(string: &str) -> String {
+    string.chars().fold(String::new(), |mut escaped, ch| {
+        if let Some(entity) = utils::html_escape(ch) {
+            escaped.push_str(entity);
+        } else {
+            escaped.push(ch);
+        }
+
+        escaped
+    })
+}
+
 fn generate_note_data(o: &mut String, note: &Note) {
     let name = if note.name.is_empty() {
         String::new()
@@ -286,8 +298,9 @@ fn generate_segment_info_table(o: &mut String, elf: &ParsedElf, phdr: &ParsedPhd
     }
 }
 
-fn generate_strtab_data(o: &mut String, section: &[u8]) {
+fn generate_strtab_data(o: &mut String, section_idx: usize, section: &[u8]) {
     let mut curr_start = 0;
+    let mut str_idx: u32 = 0;
 
     w!(o, 6, "<tr>");
     w!(o, 7, "<td></td>");
@@ -302,7 +315,15 @@ fn generate_strtab_data(o: &mut String, section: &[u8]) {
 
             if let Ok(string) = maybe {
                 if section[curr_start] != 0 {
-                    w!(o, 9, "{}", string);
+                    w!(
+                        o,
+                        9,
+                        "<span class='strtab_entry strtab_ref{}_{}'>{}</span>",
+                        section_idx,
+                        str_idx,
+                        escape_html_str(string)
+                    );
+                    str_idx += 1;
                 }
             }
 
@@ -315,11 +336,11 @@ fn generate_strtab_data(o: &mut String, section: &[u8]) {
     w!(o, 6, "</tr>");
 }
 
-fn generate_section_info_table(o: &mut String, elf: &ParsedElf, shdr: &ParsedShdr) {
+fn generate_section_info_table(o: &mut String, elf: &ParsedElf, idx: usize, shdr: &ParsedShdr) {
     let section = &elf.contents[shdr.file_offset..shdr.file_offset + shdr.size];
 
     if shdr.shtype == SHT_STRTAB {
-        generate_strtab_data(o, section);
+        generate_strtab_data(o, idx, section);
     }
 }
 
@@ -359,7 +380,7 @@ fn generate_section_info_tables(o: &mut String, elf: &ParsedElf) {
 
         if has_section_detail(shdr.shtype) {
             w!(o, 6, "<tr><td><br></td></tr>");
-            generate_section_info_table(o, elf, shdr);
+            generate_section_info_table(o, elf, idx, shdr);
         }
 
         w!(o, 5, "</table>");
@@ -415,6 +436,7 @@ fn add_highlight_script(o: &mut String) {
     for class in &classes {
         w!(o, 3, "highlightClasses('fileinfo_{}', '{}')", class, class);
     }
+    w!(o, 3, "addStrtabSectionSyncHighlighting();");
 
     w!(o, 2, "</script>");
 }
